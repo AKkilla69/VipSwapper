@@ -72,7 +72,7 @@ namespace TrainingPoint
             // initialize AuthenticationContext with the token cache of the currently signed in user, as kept in the app's EF DB
             AuthenticationContext authContext = new AuthenticationContext(
                 string.Format(ConfigurationManager.AppSettings["ida:Authority"], tenantId), new ADALTokenCache(signedInUserID));
-            AuthenticationResult result = authContext.AcquireTokenSilent(
+            AuthenticationResult result = await authContext.AcquireTokenSilentAsync(
                 ConfigurationManager.AppSettings["ida:GraphAPIIdentifier"], credential, new UserIdentifier(userObjectID, UserIdentifierType.UniqueId));
 
             // Get the GraphAPI Group Endpoint for the specific user from the _claim_sources claim in token
@@ -112,7 +112,7 @@ namespace TrainingPoint
         /// </summary>
         /// <param name="searchString">The search string entered by the user to lookup a user or group in the directory.</param>
         /// <returns>The objectID of the matching user or group.</returns>
-        public static string LookupObjectIdOfAADUserOrGroup(string searchString)
+        public static async Task<string> LookupObjectIdOfAADUserOrGroup(string searchString)
         {
             string userOrGroupObjectId = null;
             string tenantId = (System.Security.Claims.ClaimsPrincipal.Current).
@@ -129,7 +129,7 @@ namespace TrainingPoint
             AuthenticationContext authContext = new AuthenticationContext(
                 string.Format(ConfigurationManager.AppSettings["ida:Authority"], tenantId), new ADALTokenCache(signedInUserID));
 
-            AuthenticationResult result = authContext.AcquireTokenSilent(
+            AuthenticationResult result = await authContext.AcquireTokenSilentAsync(
                 ConfigurationManager.AppSettings["ida:GraphAPIIdentifier"], credential, new UserIdentifier(userObjectID, UserIdentifierType.UniqueId));
 
             HttpClient client = new HttpClient();
@@ -178,7 +178,7 @@ namespace TrainingPoint
         /// </summary>
         /// <param name="objectId">The objectId of user or group that currently has access.</param>
         /// <returns>String containing the display string for the user or group.</returns>
-        public static string LookupDisplayNameOfAADObject(string objectId)
+        public static async Task<string> LookupDisplayNameOfAADObject(string objectId)
         {
             string objectDisplayName = null;
             string tenantId = (System.Security.Claims.ClaimsPrincipal.Current).
@@ -195,7 +195,7 @@ namespace TrainingPoint
             AuthenticationContext authContext = new AuthenticationContext(
                 string.Format(ConfigurationManager.AppSettings["ida:Authority"], tenantId), new ADALTokenCache(signedInUserID));
 
-            AuthenticationResult result = authContext.AcquireTokenSilent(
+            AuthenticationResult result = await authContext.AcquireTokenSilentAsync(
                 ConfigurationManager.AppSettings["ida:GraphAPIIdentifier"], credential, new UserIdentifier(userObjectID, UserIdentifierType.UniqueId));
 
             HttpClient client = new HttpClient();
@@ -227,7 +227,7 @@ namespace TrainingPoint
         /// </summary>
         /// <param name="objectId">The objectId of user or group that currently has access.</param>
         /// <returns>String containing the display string for the user or group.</returns>
-        public static bool IsUserAADAdmin(ClaimsIdentity Identity)
+        public static async Task<bool> IsUserAADAdmin(ClaimsIdentity Identity)
         {
             string tenantId = Identity.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid").Value;
             string signedInUserID = Identity.FindFirst(System.IdentityModel.Claims.ClaimTypes.NameIdentifier).Value;
@@ -240,7 +240,7 @@ namespace TrainingPoint
             AuthenticationContext authContext = new AuthenticationContext(
                 string.Format(ConfigurationManager.AppSettings["ida:Authority"], tenantId), new ADALTokenCache(signedInUserID));
 
-            AuthenticationResult result = authContext.AcquireTokenSilent(
+            AuthenticationResult result = await authContext.AcquireTokenSilentAsync(
                 ConfigurationManager.AppSettings["ida:GraphAPIIdentifier"], credential, new UserIdentifier(userObjectID, UserIdentifierType.UniqueId));
 
             HttpClient client = new HttpClient();

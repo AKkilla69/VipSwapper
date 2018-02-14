@@ -199,7 +199,7 @@ namespace TrainingPoint.Controllers
                 if (training.CreatedBy == (System.Security.Claims.ClaimsPrincipal.Current).
                     FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value)
                 {
-                    string objectIdOfUserOrGroup = GraphUtil.LookupObjectIdOfAADUserOrGroup(UserOrGroupSearchString);
+                    string objectIdOfUserOrGroup = GraphUtil.LookupObjectIdOfAADUserOrGroup(UserOrGroupSearchString).Result;
                     if (!string.IsNullOrEmpty(objectIdOfUserOrGroup))
                     {
                         var ace = db.AccessControlEntries.Where(a => a.TrainingId == training.Id && a.PrincipalId == objectIdOfUserOrGroup).FirstOrDefault();

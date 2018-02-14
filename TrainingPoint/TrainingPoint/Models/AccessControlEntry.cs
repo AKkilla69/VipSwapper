@@ -32,7 +32,7 @@ namespace TrainingPoint.Models
             get
             {
                 if (PrincipalId == null) return null;
-                else return TrainingPoint.GraphUtil.LookupDisplayNameOfAADObject(PrincipalId);
+                else return TrainingPoint.GraphUtil.LookupDisplayNameOfAADObject(PrincipalId).Result;
             }
         }
     }

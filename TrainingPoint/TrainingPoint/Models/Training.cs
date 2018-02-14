@@ -31,7 +31,7 @@ namespace TrainingPoint.Models
         {
             get {
                 if (CreatedBy == null) return null;
-                else return TrainingPoint.GraphUtil.LookupDisplayNameOfAADObject(CreatedBy);
+                else return TrainingPoint.GraphUtil.LookupDisplayNameOfAADObject(CreatedBy).Result;
             }
         }
         public string Name { get; set; }

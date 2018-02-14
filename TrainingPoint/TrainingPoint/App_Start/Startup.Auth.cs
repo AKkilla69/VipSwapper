@@ -47,7 +47,7 @@ namespace TrainingPoint
                 {
                     ClientId = ClientId,
                     Authority = Authority,
-                    TokenValidationParameters = new System.IdentityModel.Tokens.TokenValidationParameters
+                    TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
                     {
                         // we inject our own multitenant validation logic
                         ValidateIssuer = false,
@@ -68,17 +68,17 @@ namespace TrainingPoint
 
                             return Task.FromResult(0);
                         },
-                        AuthorizationCodeReceived = (context) =>
+                        AuthorizationCodeReceived = async (context) =>
                         {
                             ClientCredential credential = new ClientCredential(ClientId, Password);
                             string tenantID = context.AuthenticationTicket.Identity.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid").Value;
                             string signedInUserID = context.AuthenticationTicket.Identity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
                             AuthenticationContext authContext = new AuthenticationContext(string.Format("https://login.windows.net/{0}", tenantID), new ADALTokenCache(signedInUserID));
-                            AuthenticationResult result = authContext.AcquireTokenByAuthorizationCode(
+                            AuthenticationResult result = await authContext.AcquireTokenByAuthorizationCodeAsync(
                                 context.Code, new Uri(HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Path)), credential);
 
-                            if (GraphUtil.IsUserAADAdmin(context.AuthenticationTicket.Identity))
+                            if (GraphUtil.IsUserAADAdmin(context.AuthenticationTicket.Identity).Result)
                                 context.AuthenticationTicket.Identity.AddClaim(new Claim("roles", "admin"));
 
                             return Task.FromResult(0);

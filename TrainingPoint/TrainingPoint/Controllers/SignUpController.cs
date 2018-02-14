@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using TrainingPoint.Models;
@@ -65,7 +66,7 @@ namespace TrainingPoint.Controllers
         }
 
         // POST: /SignUp/ProcessCode
-        public ActionResult ProcessCode(string code, string error, string error_description, string resource, string state)
+        public async Task<ActionResult> ProcessCode(string code, string error, string error_description, string resource, string state)
         {
             // Is this a response to a request we generated? Let's see if the state is carrying an ID we previously saved
             // ---if not, return an error            
@@ -81,7 +82,7 @@ namespace TrainingPoint.Controllers
                 ClientCredential credential = new ClientCredential(ConfigurationManager.AppSettings["ida:ClientID"],
                                                                    ConfigurationManager.AppSettings["ida:Password"]);
                 AuthenticationContext authContext = new AuthenticationContext(string.Format(ConfigurationManager.AppSettings["ida:Authority"], "common"));
-                AuthenticationResult result = authContext.AcquireTokenByAuthorizationCode(
+                AuthenticationResult result = await authContext.AcquireTokenByAuthorizationCodeAsync(
                     code, new Uri(Request.Url.GetLeftPart(UriPartial.Path)), credential);
 
                 var myTenant = db.Organizations.FirstOrDefault(a => a.Issuer == state);
